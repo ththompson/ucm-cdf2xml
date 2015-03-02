@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="<!--$PageCharset-->" ?>
+<!--$setContentType("text/xml") -->
+<!--$docLoadResourceIncludes("dDocName=CORP_IDOC&amp;RevisionSelectionMethod=LatestReleased")-->
+<!--$SortField = "dInDate", SortOrder = "Desc", ResultCount = "200" -->
+
+<!--$if not QueryText-->
+	<!--$QueryText = "`Data File` <in> xWebsiteObjectType <AND> dSecurityGroup <matches> `CORPWebContent`" -->
+<!--$else-->
+	<!--$QueryText =  "dDocType <matches> `WebContent` <AND> dSecurityGroup <matches> `CORPWebContent` <AND> `Data File` <in> xWebsiteObjectType <AND> xWebsites <contains>`CORP`<AND>" & QueryText-->					
+<!--$endif-->
+
+<!--$if batch -->
+	<!--$QueryText = QueryText & " <AND> (xBatchID <matches> `"& batch &"`)"-->
+<!--$endif-->
+
+<!--$if id -->
+	<!--$QueryText = "(dDocName <matches> `"& id &"`)"-->
+<!--$endif-->
+
+<!--$doSSSearch=1-->
+
+<!--$if doSSSearch-->
+	<!--$executeService("SS_GET_SEARCH_RESULTS")-->
+<!--$else-->
+	<!--$executeService("GET_SEARCH_RESULTS")-->
+<!--$endif-->
+
+<ucm_data>
+<info>
+	<query><!--$js(QueryText)--></query>
+	<results><!--$ TotalRows --></results>
+</info>
+<source_data>
+<!--$loop SearchResults-->
+	<!--$if xWebsiteObjectType like "Data File"-->
+		<!--$rssUrl = xml(SS_SERVER_NAME & wcmUrl('link',dDocName))-->
+	<!--$else-->
+		<!--$rssUrl =  xml(SS_SERVER_NAME & asgLink('MappedFolderDocUrl',dDocName))-->		
+	<!--$endif-->
+	<item>	 
+	 <id><!--$xml(dDocName)--></id>
+	 <title><!--$xml(dDocTitle)--></title>
+	 <description><!--$xml(xDescription)--></description>
+	 <region_definition><!--$xml(xRegionDefinition)--></region_definition>
+	 <body>
+<!--$if strEquals(xRegionDefinition, 'CORP_REG_DEFAULTCONTENT') OR	
+		strEquals(xRegionDefinition, 'CORP_REG_DYNAMICLISTING') OR	
+		strEquals(xRegionDefinition, 'CORP_REG_STATICLISTLISTING') OR
+		strEquals(xRegionDefinition, 'CORP_REG_HPFUNCTIONS') OR
+		strEquals(xRegionDefinition, 'CORP_REG_SINGLECOLUMNNAV') OR
+		strEquals(xRegionDefinition, 'CORP_REG_SLIDESHOW') OR
+		strEquals(xRegionDefinition, 'CORP_REG_FORMS') -->
+	<!--$xml(wcmPlaceholder("Area", "placeholderDefinitionDocName=CORP_PH_STANDARDCONTENT","dataFileDocName=" & dDocName))-->	
+<!--$elseif strEquals(xRegionDefinition, 'CORP_REG_CONTENTLISTING')-->
+	<!--$xml(wcmPlaceholder("Area", "placeholderDefinitionDocName=CORP_PH_SINGLECONTENTLISTING","dataFileDocName=" & dDocName))-->
+<!--$elseif strEquals(xRegionDefinition, 'CORP_REG_FOOTER_LINKS')-->
+	<!--$xml(wcmPlaceholder("Area", "placeholderDefinitionDocName=CORP_PH_FOOTER","dataFileDocName=" & dDocName))-->
+<!--$elseif strEquals(xRegionDefinition, 'CORP_REG_HOMEPAGE')-->
+	<!--$xml(wcmPlaceholder("Area", "placeholderDefinitionDocName=CORP_PH_HOMEPAGE","dataFileDocName=" & dDocName))-->
+<!--$elseif strEquals(xRegionDefinition, 'CORP_REG_MEGAMENU')-->
+	<!--$xml(wcmPlaceholder("Area", "placeholderDefinitionDocName=CORP_PH_MEGAMENU","dataFileDocName=" & dDocName))-->
+<!--$elseif strEquals(xRegionDefinition, 'CORP_REG_NEWS')-->
+	<!--$xml(wcmPlaceholder("Area", "placeholderDefinitionDocName=CORP_PH_NEWS","dataFileDocName=" & dDocName))-->
+<!--$elseif strEquals(xRegionDefinition, 'CORP_REG_RELATEDLINKS')-->
+	<!--$xml(wcmPlaceholder("Area", "placeholderDefinitionDocName=CORP_PH_RELATEDLINKS","dataFileDocName=" & dDocName))-->
+<!--$elseif strEquals(xRegionDefinition, 'CORP_REG_SEEALSO')-->
+	<!--$xml(wcmPlaceholder("Area", "placeholderDefinitionDocName=CORP_PH_SEEALSO","dataFileDocName=" & dDocName))-->
+<!--$elseif strEquals(xRegionDefinition, 'CORP_REG_TREESTRUCTURE')-->
+	<!--$xml(wcmPlaceholder("Area", "placeholderDefinitionDocName=CORP_PH_TREESTRUCTURE","dataFileDocName=" & dDocName))-->
+<!--$endif-->
+	 </body>
+	 <release_date><!--$formatDateWithPattern(dInDate,"MM/dd/yyyy hh:mm")--></release_date>
+	 <keywords><!--$xml(xKeywords)--></keywords>
+	 <author><!--$xml(dDocAuthor)--></author>
+	 <type><!--$xml(dDocType)--></type>
+	 <content_type><!--$xml(xContentType)--></content_type>
+	 <functional_area><!--$xml(xFunctionalArea)--></functional_area>
+	 <content_owner><!--$xml(xContentOwner)--></content_owner>
+	 <functional_area_peer><!--$xml(xFunctionAreaPR)--></functional_area_peer>
+	 <peer_reviewer><!--$xml(xPeerReviewer)--></peer_reviewer>
+	 <revision><!--$xml(dRevLabel)--></revision>
+	 <web_site_section><!--$xml( wcmUrl('nodelink',strSubstring(xWebsiteSection,5)))--></web_site_section>
+	 </item>
+<!--$endloop-->
+</source_data>
+<junk>
+<!-- 
+	<head><!--$include ss_layout_head_info--></head>
+-->
+</junk>
+</ucm_data>
+
